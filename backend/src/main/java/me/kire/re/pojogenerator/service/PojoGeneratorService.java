@@ -1,129 +1,63 @@
 package me.kire.re.pojogenerator.service;
 
-import me.kire.re.pojogenerator.model.Attribute;
-import me.kire.re.pojogenerator.model.Class;
-import me.kire.re.pojogenerator.model.PropertyPayload;
+import lombok.RequiredArgsConstructor;
+import me.kire.re.pojogenerator.client.ClientPojoGenerator;
+import me.kire.re.pojogenerator.factory.TextFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static me.kire.re.pojogenerator.util.Constants.ARRAY_BODY;
-import static me.kire.re.pojogenerator.util.Constants.ARRAY_POSTFIX;
-import static me.kire.re.pojogenerator.util.Constants.ARRAY_PREFIX;
-import static me.kire.re.pojogenerator.util.StringUtils.removeArrayFormat;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class PojoGeneratorService {
+    private final GenerateCodeService generateCodeService;
 
-    public Mono<Map<Class, List<Attribute>>> generate(String text) {
-        Flux<PropertyPayload> rows = this.read(text);
-        return this.cache(rows);
+    public Mono<Void> generate(String text) {
+        return this.createTempDirectory()
+                .flatMap(path -> this.generateCodeService.execute(new TextFactory(), text)
+                        .flatMap(ClientPojoGenerator::write)
+                        .then(this.deleteDirectory(path)))
+                .then();
     }
 
-    private Flux<PropertyPayload> read(String text) {
-        String[] row = text.split("\n");
-        return Flux.fromIterable(Arrays.asList(row))
-                .map(line -> line.split(" - "))
-                .filter(parts -> parts.length == 2)
-                .map(token -> PropertyPayload.builder().leftToken(token[0].trim()).rightToken(token[1].trim()).build());
+    private Mono<Path> createTempDirectory() {
+        return Mono.fromCallable(() -> {
+                    String uuid = UUID.randomUUID().toString();
+                    Path parentDir = Path.of("temp");
+
+                    if (Files.notExists(parentDir)) {
+                        Files.createDirectory(parentDir);
+                    }
+
+                    String prefix = "pojo_" + uuid + "_";
+                    return Files.createTempDirectory(parentDir, prefix);
+                })
+                .subscribeOn(Schedulers.boundedElastic())
+                .onErrorMap(IOException.class, e -> new RuntimeException("Error creating temp directory", e));
     }
 
-    private Mono<Map<Class, List<Attribute>>> cache(Flux<PropertyPayload> rows) {
-        return rows.collectList()
-                .map(list -> {
-                    Map<Class, List<Attribute>> map = new LinkedHashMap<>();
-                    list.forEach(payload -> {
-                        String leftToken = payload.leftToken();
-                        String rightToken = payload.rightToken();
-
-                        String[] tokens = leftToken.split("\\.");
-
-                        int firstIndex = 0;
-                        String className = tokens[firstIndex];
-
-                        Class classKey = this.buildParentClass(className, rightToken);
-
-                        for (int attributeIndex = 0; attributeIndex < tokens.length; attributeIndex++) {
-                            classKey = this.defineDefaultNameOrGivenName(tokens, classKey, attributeIndex, rightToken);
-
-                            if (this.isLastIndex(attributeIndex, tokens)) {
-                                break;
-                            }
-
-                            int nextAttributeIndex = attributeIndex + 1;
-                            String name = tokens[nextAttributeIndex];
-                            Attribute attributeValue = this.buildAttribute(name, rightToken, this.isLastIndex(nextAttributeIndex, tokens));
-
-                            if (map.containsKey(classKey)) {
-                                List<Attribute> attributes = map.get(classKey);
-                                if (!attributes.contains(attributeValue)) {
-                                    attributes.add(attributeValue);
-                                }
-                                continue;
-                            }
-
-                            List<Attribute> attributes = new ArrayList<>();
-                            attributes.add(attributeValue);
-                            map.put(classKey, attributes);
-                        }
-                    });
-                    return map;
-                });
+    private Mono<Void> deleteDirectory(Path directory) {
+        return Mono.fromRunnable(() -> {
+                    try (Stream<Path> walk = Files.walk(directory)) {
+                        walk.sorted(Comparator.reverseOrder())
+                                .forEach(path -> {
+                                    try {
+                                        Files.delete(path);
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
-
-    private boolean isLastIndex(int attributeIndex, String[] splitAttribute) {
-        return attributeIndex == splitAttribute.length - 1;
-    }
-
-    private Class defineDefaultNameOrGivenName(String[] tokens, Class classKey, int attributeIndex, String io) {
-        if (attributeIndex == 0) {
-            return classKey;
-        }
-        String attributeName = tokens[attributeIndex];
-        return this.buildParentClass(attributeName, io);
-    }
-
-    private Class buildParentClass(String name, String io) {
-        name = StringUtils.capitalize(name);
-        return Class.builder()
-                .name(removeArrayFormat(name))
-                .ioType(io)
-                .isObject(isObject(name))
-                .isArray(isArray(name))
-                .build();
-    }
-
-
-    private Attribute buildAttribute(String name, String io, boolean isLastIndex) {
-        boolean isObject = !isLastIndex;
-
-        String type = "String";
-        if (isObject) {
-            type = StringUtils.capitalize(name);
-        }
-
-        return Attribute.builder()
-                .type(removeArrayFormat(type))
-                .name(removeArrayFormat(name))
-                .ioType(io)
-                .isObject(isObject)
-                .isArray(isArray(name))
-                .build();
-    }
-
-    private boolean isObject(String name) {
-        return name.startsWith(name.substring(0, 1).toUpperCase());
-    }
-
-    private boolean isArray(String name) {
-        return name.contains(ARRAY_BODY) || name.contains(ARRAY_PREFIX) || name.contains(ARRAY_POSTFIX);
-    }
-
 }
