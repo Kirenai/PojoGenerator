@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -23,12 +24,15 @@ import static me.kire.re.pojogenerator.util.StringUtils.removeArrayFormat;
 public class TextFactory implements FileFactory {
 
     @Override
-    public Mono<Pojo> createPojo(String text) {
+    public Mono<Pojo> createPojo(String text, Path path) {
         return Mono.defer(() -> {
             TextPojo.TextPojoBuilder builder = TextPojo.builder();
             Flux<PropertyPayload> read = this.read(text);
             return this.cache(read)
-                    .doOnNext(builder::textPayload)
+                    .doOnNext(map -> {
+                        builder.textPayload(map);
+                        builder.outputDirectory(path);
+                    })
                     .then(Mono.fromCallable(builder::build));
         });
     }

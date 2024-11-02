@@ -21,7 +21,7 @@ public class PojoGeneratorService {
 
     public Mono<Void> generate(String text) {
         return this.createTempDirectory()
-                .flatMap(path -> this.generateCodeService.execute(new TextFactory(), text)
+                .flatMap(path -> this.generateCodeService.execute(new TextFactory(), text, path)
                         .flatMap(ClientPojoGenerator::write)
                         .then(this.deleteDirectory(path)))
                 .then();
