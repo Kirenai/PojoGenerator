@@ -9,14 +9,16 @@ import java.nio.file.Path;
 
 public class ClientPojoGenerator {
     private final Mono<Pojo> baseStructure;
+    private final Path path;
 
     public ClientPojoGenerator(FileFactory factory, String text, Path path) {
         this.baseStructure = factory.createPojo(text, path);
+        this.path = path;
     }
 
-    public Mono<Void> write() {
+    public Mono<Path> write() {
         return this.baseStructure.flatMap(Pojo::write)
                 .subscribeOn(Schedulers.boundedElastic())
-                .then();
+                .thenReturn(path);
     }
 }

@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<javapoet.version>1.13.0</javapoet.version>
+		<zip4j.version>2.11.5</zip4j.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -39,6 +40,11 @@
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
 			<version>${javapoet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>${zip4j.version}</version>
 		</dependency>
 
 		<dependency>

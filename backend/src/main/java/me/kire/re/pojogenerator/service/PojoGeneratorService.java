@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,13 +19,15 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class PojoGeneratorService {
     private final GenerateCodeService generateCodeService;
+    private final CompressFileService compressFileService;
 
-    public Mono<Void> generate(String text) {
+    public Mono<File> generate(String text) {
         return this.createTempDirectory()
-                .flatMap(path -> this.generateCodeService.execute(new TextFactory(), text, path)
-                        .flatMap(ClientPojoGenerator::write)
-                        .then(this.deleteDirectory(path)))
-                .then();
+                .flatMap(path ->
+                        this.generateCodeService.execute(new TextFactory(), text, path))
+                .flatMap(ClientPojoGenerator::write)
+                .flatMap(this.compressFileService::execute)
+                .flatMap(tuple -> this.deleteDirectory(tuple.getT2(), tuple.getT1()));
     }
 
     private Mono<Path> createTempDirectory() {
@@ -33,7 +36,7 @@ public class PojoGeneratorService {
                     Path parentDir = Path.of("temp");
 
                     if (Files.notExists(parentDir)) {
-                        Files.createDirectory(parentDir);
+                        Files.createDirectories(parentDir);
                     }
 
                     String prefix = "pojo_" + uuid + "_";
@@ -43,21 +46,21 @@ public class PojoGeneratorService {
                 .onErrorMap(IOException.class, e -> new RuntimeException("Error creating temp directory", e));
     }
 
-    private Mono<Void> deleteDirectory(Path directory) {
-        return Mono.fromRunnable(() -> {
-                    try (Stream<Path> walk = Files.walk(directory)) {
-                        walk.sorted(Comparator.reverseOrder())
-                                .forEach(path -> {
-                                    try {
-                                        Files.delete(path);
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                });
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).subscribeOn(Schedulers.boundedElastic())
-                .then();
+    private Mono<File> deleteDirectory(Path directory, File file) {
+        return Mono.fromCallable(() -> {
+            try (Stream<Path> walk = Files.walk(directory)) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return file;
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 }
