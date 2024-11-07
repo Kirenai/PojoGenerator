@@ -1,20 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { ColorModeButton } from "@/components/ui/color-mode";
-import { Box, Heading, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
     <VStack p="4">
-      <Box position="relative" w="full" textAlign="center">
-        <Heading size="4xl">Pojo Generator</Heading>
-        <Box position="absolute" top="0" right="0">
-          <ColorModeButton />
-        </Box>
-      </Box>
-      <Box>
-        <Button variant="surface" colorPalette="teal">
-          Submit
-        </Button>
+      <Box
+        mt="4"
+        data-state="open"
+        _open={{
+          animationName: "fade-in, scale-in",
+          animationDuration: "300ms",
+        }}
+      >
+        <Link to={"/pojo"}>
+          <Button variant="surface" colorPalette="teal" w="36">
+            Start Generator
+          </Button>
+        </Link>
       </Box>
     </VStack>
   );
