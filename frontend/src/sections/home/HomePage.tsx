@@ -14,7 +14,7 @@ const HomePage = () => {
         }}
       >
         <Link to={"/pojo"}>
-          <Button variant="surface" colorPalette="teal" w="36">
+          <Button variant="surface" colorPalette="teal" w="36" size="xl">
             Start Generator
           </Button>
         </Link>
