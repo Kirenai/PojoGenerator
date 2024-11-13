@@ -14,7 +14,8 @@ public class PojoGeneratorRouter {
     @Bean
     public RouterFunction<ServerResponse> router(PojoGeneratorHandler handler) {
         return RouterFunctions.route()
-                .POST("/generate", RequestPredicates.accept(MediaType.TEXT_PLAIN), handler::generate)
+                .POST("/generate", RequestPredicates.accept(MediaType.APPLICATION_OCTET_STREAM)
+                        .and(RequestPredicates.contentType(MediaType.TEXT_PLAIN)), handler::generate)
                 .build();
     }
 }
