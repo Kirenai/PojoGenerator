@@ -24,6 +24,7 @@ const PojoForm = () => {
   useEffect(() => {
     if (actionData?.success && actionData.zipUrl !== zipUrl) {
       setZipUrl(actionData.zipUrl)
+      setError(null)
     }
 
     if (actionData?.success === false && actionData.error) {
