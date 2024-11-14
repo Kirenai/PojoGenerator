@@ -34,6 +34,10 @@ const PojoForm = () => {
     return () => {}
   }, [actionData, zipUrl])
 
+  const handleOnClose = () => {
+    setError(null)
+  }
+
   return (
     <VStack
       data-state="open"
@@ -82,7 +86,13 @@ const PojoForm = () => {
       </Formik>
       {zipUrl && <DownloadButton zipUrl={zipUrl} />}
       {error && (
-        <Alert title="Request Error" status="error">
+        <Alert
+          title="Request Error"
+          status="error"
+          variant="surface"
+          closable={true}
+          onClose={handleOnClose}
+        >
           {error}
         </Alert>
       )}
