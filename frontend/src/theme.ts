@@ -14,7 +14,7 @@ const customConfig = defineConfig({
       colors: {
         bg: {
           DEFAULT: {
-            value: { _light: '{colors.gray.50}', _dark: '{colors.gray.900}' },
+            value: { _light: '{colors.gray.50}', _dark: '{colors.gray.950}' },
           },
         },
       },
