@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react'
 import { Button } from '@/components/ui/button'
+import Footer from '@/components/ui/footer'
 
 const HomePage = () => {
   return (
-    <VStack pt="16" pb="20">
-      <Container>
+    <>
+      <Container py="16">
         <VStack gap="10">
-          <VStack alignSelf="flex-start" maxW="3xl" gap="5">
+          <VStack alignSelf="flex-start" maxW="3xl" gap="5" px="1.5">
             <Heading alignSelf="start" size="5xl" as="h1">
               Pojo Generator <br /> herramienta para crear POJOs
             </Heading>
@@ -38,7 +39,8 @@ const HomePage = () => {
           </Box>
         </VStack>
       </Container>
-    </VStack>
+      <Footer />
+    </>
   )
 }
 

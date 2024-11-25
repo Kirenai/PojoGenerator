@@ -45,7 +45,7 @@ const PojoForm = () => {
         animationName: 'slide-from-top, fade-in',
         animationDuration: 'slow',
       }}
-      w="96"
+      w="full"
     >
       <Formik
         initialValues={initialValues}
@@ -61,26 +61,29 @@ const PojoForm = () => {
       >
         {() => (
           <Form>
-            <Field
-              fontFamily="Roboto Mono"
-              w="40.40vw"
-              minH="60.60vh"
-              as={Textarea}
-              size="xl"
-              name="text"
-              placeholder={placeholder}
-              colorPalette="teal"
-              fontWeight="700"
-            />
-            <Button
-              type="submit"
-              variant="surface"
-              colorPalette="teal"
-              size="xl"
-              w="36"
-            >
-              Submit
-            </Button>
+            <VStack>
+              <Field
+                fontFamily="Roboto Mono"
+                w="40.40vw"
+                minH="60.60vh"
+                as={Textarea}
+                size="xl"
+                name="text"
+                placeholder={placeholder}
+                colorPalette="teal"
+                fontWeight="700"
+              />
+              <Button
+                alignSelf="start"
+                type="submit"
+                variant="surface"
+                colorPalette="teal"
+                size="xl"
+                w="36"
+              >
+                Submit
+              </Button>
+            </VStack>
           </Form>
         )}
       </Formik>

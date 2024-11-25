@@ -8,6 +8,7 @@ import {
   Icon,
   IconButton,
   Text,
+  VStack,
 } from '@chakra-ui/react'
 import { ColorModeButton } from './color-mode'
 
@@ -23,7 +24,7 @@ const BackIconButton = ({ pathname, handleOnClick }: BackIconProps) => {
         variant="surface"
         colorPalette="teal"
         data-state="open"
-        size="sm"
+        size="xs"
         _open={{
           animationName: 'fade-in, scale-in',
           animationDuration: '300ms',
@@ -46,23 +47,28 @@ const Navbar = () => {
 
   return (
     <>
-      <Container mt="2">
-        <Box position="relative" w="full" textAlign="start">
-          <Icon fontSize="4xl">
-            <FaJava />
-          </Icon>
-          <HStack gap="4" position="absolute" top="0" right="0">
-            <BackIconButton pathname={pathname} handleOnClick={handleOnClick} />
-            <Link to="/pojo">
-              <Text fontSize="sm" fontWeight="medium">
-                Generator
-              </Text>
-            </Link>
-            <ColorModeButton />
-          </HStack>
-        </Box>
-      </Container>
-      <Outlet />
+      <VStack gap="8" minH="100vh">
+        <Container mt="2">
+          <Box position="relative" w="full" textAlign="start">
+            <Icon fontSize="4xl">
+              <FaJava />
+            </Icon>
+            <HStack gap="4" position="absolute" top="0" right="0">
+              <BackIconButton
+                pathname={pathname}
+                handleOnClick={handleOnClick}
+              />
+              <Link to="/pojo">
+                <Text fontSize="sm" fontWeight="medium">
+                  Generator
+                </Text>
+              </Link>
+              <ColorModeButton />
+            </HStack>
+          </Box>
+        </Container>
+        <Outlet />
+      </VStack>
     </>
   )
 }

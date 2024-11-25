@@ -1,11 +1,11 @@
-import { HStack } from '@chakra-ui/react'
+import { Container } from '@chakra-ui/react'
 import PojoForm from './components/PojoForm'
 
 const PojoHome = () => {
   return (
-    <HStack p="4" justifyContent="center">
+    <Container p="4">
       <PojoForm />
-    </HStack>
+    </Container>
   )
 }
 
