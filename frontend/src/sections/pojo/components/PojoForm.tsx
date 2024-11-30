@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useActionData, useSubmit } from 'react-router-dom'
-import { Textarea, VStack } from '@chakra-ui/react'
+import { Box, Textarea, VStack } from '@chakra-ui/react'
 import { Field, Form, Formik } from 'formik'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -46,6 +46,7 @@ const PojoForm = () => {
         animationDuration: 'slow',
       }}
       w="full"
+      gap="0.5"
     >
       <Formik
         initialValues={initialValues}
@@ -64,7 +65,12 @@ const PojoForm = () => {
             <VStack>
               <Field
                 fontFamily="Roboto Mono"
-                w="40.40vw"
+                w={{
+                  base: '90.90vw',
+                  md: '80.80vw',
+                  xl: '60.60vw',
+                  '2xl': '40.40vw',
+                }}
                 minH="60.60vh"
                 as={Textarea}
                 size="xl"
@@ -79,7 +85,7 @@ const PojoForm = () => {
                 variant="surface"
                 colorPalette="teal"
                 size="xl"
-                w="36"
+                w={{ base: 'full', sm: '180px' }}
               >
                 Submit
               </Button>
@@ -87,18 +93,29 @@ const PojoForm = () => {
           </Form>
         )}
       </Formik>
-      {zipUrl && <DownloadButton zipUrl={zipUrl} />}
-      {error && (
-        <Alert
-          title="Request Error"
-          status="error"
-          variant="surface"
-          closable={true}
-          onClose={handleOnClose}
-        >
-          {error}
-        </Alert>
-      )}
+      <Box
+        w={{
+          base: '90.90vw',
+          md: '80.80vw',
+          xl: '60.60vw',
+          '2xl': '40.40vw',
+        }}
+      >
+        {zipUrl && <DownloadButton zipUrl={zipUrl} />}
+        {error && (
+          <Alert
+            mt="4"
+            w="full"
+            title="Request Error"
+            status="error"
+            variant="surface"
+            closable={true}
+            onClose={handleOnClose}
+          >
+            {error}
+          </Alert>
+        )}
+      </Box>
     </VStack>
   )
 }

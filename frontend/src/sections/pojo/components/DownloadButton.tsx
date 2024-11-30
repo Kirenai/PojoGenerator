@@ -7,14 +7,19 @@ type SubmitButtonProps = {
 const DownloadButton = ({ zipUrl }: SubmitButtonProps) => {
   return (
     <Box
-      mt={4}
+      mt="0.5"
       data-state="open"
       _open={{
         animationName: 'slide-from-top, fade-in',
         animationDuration: 'slow',
       }}
     >
-      <Button colorPalette="blue" variant="surface" size="xl" w="36">
+      <Button
+        colorPalette="blue"
+        variant="surface"
+        size="xl"
+        w={{ base: 'full', sm: '180px' }}
+      >
         <a href={zipUrl} download>
           Download
         </a>
