@@ -13,7 +13,7 @@ const initialValues: Payload = {
 }
 
 const PojoForm = () => {
-  const submite = useSubmit()
+  const submit = useSubmit()
   const placeholder =
     'person.id - I\nperson.name - I\nperson.age - I\ndata.person.id - O\ndata.person.name - O\ndata.person.age - O'
 
@@ -54,7 +54,7 @@ const PojoForm = () => {
           try {
             const formData = new FormData()
             formData.append('payload', JSON.stringify(values))
-            submite(formData, { method: 'post', action: '/pojo' })
+            submit(formData, { method: 'post', action: '/pojo' })
           } catch (error) {
             console.error('Error serializing form data', error)
           }
