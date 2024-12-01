@@ -5,6 +5,11 @@ import Footer from '@/components/ui/footer'
 
 const HomePage = () => {
   const navigate = useNavigate()
+
+  const handleOnClick = () => {
+    navigate('/pojo')
+  }
+
   return (
     <>
       <Container py="16">
@@ -32,9 +37,7 @@ const HomePage = () => {
             }}
           >
             <Button
-              onClick={() => {
-                navigate('/pojo')
-              }}
+              onClick={() => handleOnClick()}
               variant="surface"
               colorPalette="teal"
               w={{ base: 'full', sm: '180px' }}
