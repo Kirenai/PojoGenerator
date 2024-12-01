@@ -1,4 +1,5 @@
-import { Box, Button } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
+import { LinkButton } from '@/components/ui/link-button'
 
 type SubmitButtonProps = {
   zipUrl: string
@@ -14,16 +15,16 @@ const DownloadButton = ({ zipUrl }: SubmitButtonProps) => {
         animationDuration: 'slow',
       }}
     >
-      <Button
+      <LinkButton
         colorPalette="blue"
         variant="surface"
         size="xl"
         w={{ base: 'full', sm: '180px' }}
+        href={zipUrl}
+        download
       >
-        <a href={zipUrl} download>
-          Download
-        </a>
-      </Button>
+        Download
+      </LinkButton>
     </Box>
   )
 }
