@@ -23,7 +23,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      'no-empty-interface': false,
+      '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
 )
