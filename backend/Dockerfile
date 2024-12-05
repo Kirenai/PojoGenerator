@@ -1,14 +1,30 @@
-# Utiliza una imagen base de JDK
-FROM eclipse-temurin:21-jdk-alpine
+# Etapa 1: Construir el proyecto
+FROM maven:3.9.5-eclipse-temurin-21 AS builder
 
-# Establece el directorio de trabajo
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copia el JAR generado en el contenedor
-COPY target/pojo_generator-0.0.1-SNAPSHOT.jar app.jar
+# Copiar el archivo pom.xml y descargar las dependencias
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
 
-# Exponer el puerto (opcional, Render lo asignará automáticamente)
+# Copiar el resto de los archivos del proyecto
+COPY src ./src
+
+# Construir el proyecto y empaquetar el JAR
+RUN mvn clean package -DskipTests
+
+# Etapa 2: Crear la imagen final
+FROM eclipse-temurin:21-jdk-alpine
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Copiar el JAR generado desde la etapa anterior
+COPY --from=builder /app/target/*.jar app.jar
+
+# Configurar el puerto de la aplicación
 EXPOSE 8080
 
-# Comando para ejecutar tu aplicación
-CMD ["java", "-jar", "app.jar"]
+# Comando de inicio
+ENTRYPOINT ["java", "-jar", "app.jar"]
