@@ -1,5 +1,15 @@
+import { FiBox } from 'react-icons/fi'
+import { IoTelescopeOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
-import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Container,
+  Heading,
+  HStack,
+  Span,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { Button } from '@/components/ui/button'
 import Footer from '@/components/ui/footer'
 
@@ -48,6 +58,47 @@ const HomePage = () => {
           </Box>
         </VStack>
       </Container>
+      <Box as="section" w="full" py="20">
+        <Container w="full">
+          <HStack justifyContent="space-between">
+            <VStack alignItems="flex-start" w="xl" gap="4">
+              <Box>
+                <Text color="teal.500" fontWeight="semibold">
+                  Sistema de generación
+                </Text>
+              </Box>
+              <Heading as="h2" size="5xl">
+                Construye tus POJO's con el poder de este sistema
+              </Heading>
+              <Text textStyle="2xl" color="gray.400" fontSize="xl">
+                Dedique menos tiempo escribiendo Clases Java y más tiempo en la
+                lógica del negocio.
+              </Text>
+              <Box as="ul" mt="4" display="flex" flexDir="column" gap="6">
+                <Box as="li" display="flex" gap="2" alignItems="center">
+                  <FiBox />
+                  <Text>
+                    Formato.{' '}
+                    <Span color="gray.400">
+                      Genera Clases Java con un formato de texto
+                    </Span>
+                  </Text>
+                </Box>
+                <Box as="li" display="flex" gap="2" alignItems="center">
+                  <IoTelescopeOutline />
+                  <Text>
+                    Lombok.{' '}
+                    <Span color="gray.400">
+                      Clases Java con anotaciones Lombok
+                    </Span>
+                  </Text>
+                </Box>
+              </Box>
+            </VStack>
+            <VStack w="3xl">Code</VStack>
+          </HStack>
+        </Container>
+      </Box>
       <Footer />
     </>
   )
