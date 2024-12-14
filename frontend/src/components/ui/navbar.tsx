@@ -1,63 +1,27 @@
-import { BiArrowBack } from 'react-icons/bi'
 import { FaJava } from 'react-icons/fa6'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Container,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Box, Container, HStack, Icon, Text, VStack } from '@chakra-ui/react'
+import { Button } from '@/components/ui/button'
 import { ColorModeButton } from './color-mode'
 
-type BackIconProps = {
-  pathname: string
-  handleOnClick: () => void
-}
-
-const BackIconButton = ({ pathname, handleOnClick }: BackIconProps) => {
-  if (pathname !== '/') {
-    return (
-      <IconButton
-        variant="surface"
-        colorPalette="teal"
-        data-state="open"
-        size="xs"
-        _open={{
-          animationName: 'fade-in, scale-in',
-          animationDuration: '300ms',
-        }}
-        onClick={handleOnClick}
-      >
-        <BiArrowBack />
-      </IconButton>
-    )
-  }
-}
-
 const Navbar = () => {
-  const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  const handleOnClick = () => {
-    navigate(-1)
+  const handleOnClickHome = () => {
+    navigate('/')
   }
 
   return (
     <>
-      <VStack gap="8" minH="100vh">
+      <VStack gap={{ base: '8' }} minH="100vh">
         <Container mt="2">
           <Box position="relative" w="full" textAlign="start">
-            <Icon fontSize="4xl">
-              <FaJava />
-            </Icon>
+            <Button bg="transparent" onClick={handleOnClickHome}>
+              <Icon color={{ _dark: 'white', _light: 'black' }} fontSize="4xl">
+                <FaJava />
+              </Icon>
+            </Button>
             <HStack gap="4" position="absolute" top="0" right="0">
-              <BackIconButton
-                pathname={pathname}
-                handleOnClick={handleOnClick}
-              />
               <Link to="/pojo">
                 <Text fontSize="sm" fontWeight="medium">
                   Generator
