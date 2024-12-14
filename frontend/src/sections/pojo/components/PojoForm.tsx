@@ -71,7 +71,7 @@ const PojoForm = () => {
                   xl: '60.60vw',
                   '2xl': '40.40vw',
                 }}
-                minH="80.80vh"
+                minH={{ base: '70.70vh', sm: '50.50vh', md: '65.65vh' }}
                 as={Textarea}
                 size="xl"
                 name="text"
