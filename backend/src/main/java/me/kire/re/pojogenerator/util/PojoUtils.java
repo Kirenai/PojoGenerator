@@ -47,6 +47,7 @@ public class PojoUtils {
         String packageName = propertyKey.ioType().equals("I") ? "in" : "out";
         JavaFile javaFile = JavaFile.builder(packageName, classBuilder.build())
                 .skipJavaLangImports(true)
+                .indent("    ")
                 .build();
 
         try {
