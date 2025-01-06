@@ -15,7 +15,7 @@ public class PojoGeneratorRouter {
     public RouterFunction<ServerResponse> router(PojoGeneratorHandler handler) {
         return RouterFunctions.route()
                 .POST("/generate", RequestPredicates.accept(MediaType.APPLICATION_OCTET_STREAM)
-                        .and(RequestPredicates.contentType(MediaType.TEXT_PLAIN)), handler::generate)
+                        .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), handler::generate)
                 .build();
     }
 }

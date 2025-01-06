@@ -11,8 +11,8 @@ public class ClientPojoGenerator {
     private final Mono<Pojo> baseStructure;
     private final Path path;
 
-    public ClientPojoGenerator(FileFactory factory, String text, Path path) {
-        this.baseStructure = factory.createPojo(text, path);
+    public ClientPojoGenerator(FileFactory factory, String text, Path path, Boolean lombok) {
+        this.baseStructure = factory.createPojo(text, path, lombok);
         this.path = path;
     }
 

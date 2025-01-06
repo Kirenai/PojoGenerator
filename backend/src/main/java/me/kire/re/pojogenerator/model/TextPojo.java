@@ -20,12 +20,13 @@ import java.util.Map;
 public class TextPojo implements Pojo {
 
     private Map<Class, List<Attribute>> textPayload;
+    private Boolean lombok;
     private Path outputDirectory;
 
     @Override
     public Mono<Void> write() {
         if (!textPayload.isEmpty()) {
-            this.textPayload.forEach((clazz, attributes) -> PojoUtils.generateJavaFile(clazz, attributes, outputDirectory));
+            this.textPayload.forEach((clazz, attributes) -> PojoUtils.generateJavaFile(clazz, attributes, outputDirectory, lombok));
         } else {
             log.error("The external file is empty");
         }

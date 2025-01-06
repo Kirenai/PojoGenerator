@@ -7,6 +7,6 @@ import java.nio.file.Path;
 
 public interface FileFactory {
 
-    Mono<Pojo> createPojo(String text, Path path);
+    Mono<Pojo> createPojo(String text, Path path, Boolean lombok);
 
 }

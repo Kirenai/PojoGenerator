@@ -24,7 +24,7 @@ import static me.kire.re.pojogenerator.util.StringUtils.removeArrayFormat;
 public class TextFactory implements FileFactory {
 
     @Override
-    public Mono<Pojo> createPojo(String text, Path path) {
+    public Mono<Pojo> createPojo(String text, Path path, Boolean lombok) {
         return Mono.defer(() -> {
             TextPojo.TextPojoBuilder builder = TextPojo.builder();
             Flux<PropertyPayload> read = this.read(text);
@@ -32,6 +32,7 @@ public class TextFactory implements FileFactory {
                     .doOnNext(map -> {
                         builder.textPayload(map);
                         builder.outputDirectory(path);
+                        builder.lombok(lombok);
                     })
                     .then(Mono.fromCallable(builder::build));
         });

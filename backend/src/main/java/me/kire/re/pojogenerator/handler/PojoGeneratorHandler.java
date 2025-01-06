@@ -1,6 +1,7 @@
 package me.kire.re.pojogenerator.handler;
 
 import lombok.RequiredArgsConstructor;
+import me.kire.re.pojogenerator.dto.in.DtoInGeneratePojoPost;
 import me.kire.re.pojogenerator.service.PojoGeneratorService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,7 @@ public class PojoGeneratorHandler {
     private final PojoGeneratorService pojoGeneratorService;
 
     public Mono<ServerResponse> generate(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(String.class)
+        return serverRequest.bodyToMono(DtoInGeneratePojoPost.class)
                 .flatMap(this.pojoGeneratorService::generate)
                 .flatMap(file -> {
                     FileSystemResource resource = new FileSystemResource(file);

@@ -1,5 +1,6 @@
 package me.kire.re.pojogenerator.util;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -7,6 +8,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.kire.re.pojogenerator.model.Attribute;
 import me.kire.re.pojogenerator.model.Class;
@@ -19,7 +22,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-import static me.kire.re.pojogenerator.util.Constants.ARRAY_BODY;
 import static me.kire.re.pojogenerator.util.Constants.OUT_CONCAT;
 
 @Slf4j
@@ -28,7 +30,8 @@ public class PojoUtils {
     private PojoUtils() {
     }
 
-    public static void generateJavaFile(Class propertyKey, List<Attribute> attributes, Path outputDirectory) {
+    public static void generateJavaFile(Class propertyKey, List<Attribute> attributes, Path outputDirectory,
+                                        Boolean lombok) {
         // Class
         String className = upperCaseClassName(propertyKey.name());
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
@@ -41,8 +44,15 @@ public class PojoUtils {
             FieldSpec fieldSpec = generateField(listType, property);
             List<MethodSpec> methodSpecs = generateMethods(listType, property);
             classBuilder.addField(fieldSpec);
-            classBuilder.addMethods(methodSpecs);
+            if (!lombok) {
+                classBuilder.addMethods(methodSpecs);
+            }
         });
+
+        if (lombok) {
+            List<AnnotationSpec> annotations = lombokAnnotations();
+            classBuilder.addAnnotations(annotations);
+        }
 
         String packageName = propertyKey.ioType().equals("I") ? "in" : "out";
         JavaFile javaFile = JavaFile.builder(packageName, classBuilder.build())
@@ -115,6 +125,20 @@ public class PojoUtils {
                 .returns(void.class)
                 .addParameter(typeName, field)
                 .addStatement("this.$L = $L", field, field)
+                .build();
+    }
+
+    private static List<AnnotationSpec> lombokAnnotations() {
+        return Arrays.asList(getterAnnotation(), setterAnnotation());
+    }
+
+    private static AnnotationSpec getterAnnotation() {
+        return AnnotationSpec.builder(ClassName.get(Getter.class))
+                .build();
+    }
+
+    private static AnnotationSpec setterAnnotation() {
+        return AnnotationSpec.builder(ClassName.get(Setter.class))
                 .build();
     }
 

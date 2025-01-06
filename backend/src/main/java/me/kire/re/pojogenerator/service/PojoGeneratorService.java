@@ -2,6 +2,7 @@ package me.kire.re.pojogenerator.service;
 
 import lombok.RequiredArgsConstructor;
 import me.kire.re.pojogenerator.client.ClientPojoGenerator;
+import me.kire.re.pojogenerator.dto.in.DtoInGeneratePojoPost;
 import me.kire.re.pojogenerator.factory.TextFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -21,10 +22,10 @@ public class PojoGeneratorService {
     private final GenerateCodeService generateCodeService;
     private final CompressFileService compressFileService;
 
-    public Mono<File> generate(String text) {
+    public Mono<File> generate(DtoInGeneratePojoPost request) {
         return this.createTempDirectory()
                 .flatMap(path ->
-                        this.generateCodeService.execute(new TextFactory(), text, path))
+                        this.generateCodeService.execute(new TextFactory(), request, path))
                 .flatMap(ClientPojoGenerator::write)
                 .flatMap(this.compressFileService::execute)
                 .flatMap(tuple -> this.deleteDirectory(tuple.getT2(), tuple.getT1()));
