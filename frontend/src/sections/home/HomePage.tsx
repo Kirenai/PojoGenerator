@@ -92,7 +92,7 @@ const HomePage = () => {
                 </Box>
                 <Box as="li" display="flex" gap="2" alignItems="center">
                   <IoTelescopeOutline />
-                  <Text textDecoration="line-through">
+                  <Text>
                     Lombok.{' '}
                     <Span color="gray.400">
                       Clases Java con anotaciones Lombok
