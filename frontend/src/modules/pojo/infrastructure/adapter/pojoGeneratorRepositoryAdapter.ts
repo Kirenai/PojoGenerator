@@ -6,7 +6,7 @@ export const createPojoGeneratorRepositoryAdapter =
   (): PojoGeneratorRepositoryPort => {
     return {
       generate: async (payload: Payload): Promise<string> => {
-        const response = await instance.post('/generate', payload.text)
+        const response = await instance.post('/generate', payload)
         return window.URL.createObjectURL(response.data)
       },
     }

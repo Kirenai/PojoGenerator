@@ -6,7 +6,7 @@ const instance = axios.create({
   baseURL: baseURL,
   timeout: 1500,
   headers: {
-    'Content-Type': 'text/plain',
+    'Content-Type': 'application/json',
     Accept: 'application/octet-stream',
   },
   responseType: 'blob',

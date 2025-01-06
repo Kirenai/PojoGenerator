@@ -23,7 +23,7 @@ const DownloadButton = ({ zipUrl }: SubmitButtonProps) => {
         href={zipUrl}
         download
       >
-        Download
+        Descargar
       </LinkButton>
     </Box>
   )

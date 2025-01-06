@@ -15,13 +15,17 @@ const PojoHome = () => {
   const [setup, setSetup] = useState({ lombok: false })
 
   const handleOnClick = () => {
-    console.log('Click')
     setSetup({ lombok: !setup.lombok })
   }
 
   return (
     <Container p="4">
-      <HStack gap="0.5" py="2" justifyContent="space-evenly">
+      <HStack
+        gap={{ base: '2', sm: '0.5' }}
+        py="2"
+        flexDir={{ base: 'column', sm: 'row' }}
+        justifyContent="space-evenly"
+      >
         <Box w="auto" fontSize={{ lg: 'lg' }}>
           <HStack justifyContent="space-between">
             <Text>Objeto de entrada: </Text>
@@ -35,7 +39,7 @@ const PojoHome = () => {
         <Box>
           <MenuRoot>
             <MenuTrigger asChild>
-              <Button disabled variant="surface" colorPalette="teal">
+              <Button variant="surface" colorPalette="teal">
                 <GoGear />
               </Button>
             </MenuTrigger>
@@ -59,7 +63,7 @@ const PojoHome = () => {
           </MenuRoot>
         </Box>
       </HStack>
-      <PojoForm />
+      <PojoForm lombok={setup.lombok} />
     </Container>
   )
 }

@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Payload } from '@/modules/pojo/domain/model/payload'
 import Navbar from './components/ui/navbar'
 import { createPojoGeneratorService } from './modules/pojo/application/service/pojoGeneratorService'
-import { Payload } from './modules/pojo/domain/model/payload'
 import { createPojoGeneratorRepositoryAdapter } from './modules/pojo/infrastructure/adapter/pojoGeneratorRepositoryAdapter'
 import HomePage from './sections/home/HomePage'
 import PojoHome from './sections/pojo/pojo-home'

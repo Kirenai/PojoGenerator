@@ -10,9 +10,14 @@ import DownloadButton from './DownloadButton'
 
 const initialValues: Payload = {
   text: '',
+  lombok: undefined,
 }
 
-const PojoForm = () => {
+type PojoFormProps = {
+  lombok: boolean
+}
+
+const PojoForm = ({ lombok }: PojoFormProps) => {
   const submit = useSubmit()
   const placeholder =
     'person.id - I\nperson.name - I\nperson.age - I\ndata.person.id - O\ndata.person.name - O\ndata.person.age - O'
@@ -53,7 +58,8 @@ const PojoForm = () => {
         onSubmit={values => {
           try {
             const formData = new FormData()
-            formData.append('payload', JSON.stringify(values))
+            const newValues = { ...values, lombok }
+            formData.append('payload', JSON.stringify(newValues))
             submit(formData, { method: 'post', action: '/pojo' })
           } catch (error) {
             console.error('Error serializing form data', error)

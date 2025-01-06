@@ -1,3 +1,4 @@
 export interface Payload {
-  text: string;
+  text: string
+  lombok?: boolean
 }
