@@ -133,12 +133,14 @@ public class PojoUtils {
     }
 
     private static AnnotationSpec getterAnnotation() {
-        return AnnotationSpec.builder(ClassName.get(Getter.class))
+        ClassName getter = ClassName.get("lombok", "Getter");
+        return AnnotationSpec.builder(getter)
                 .build();
     }
 
     private static AnnotationSpec setterAnnotation() {
-        return AnnotationSpec.builder(ClassName.get(Setter.class))
+        ClassName setter = ClassName.get("lombok", "Setter");
+        return AnnotationSpec.builder(setter)
                 .build();
     }
 
