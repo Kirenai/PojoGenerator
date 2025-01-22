@@ -4,7 +4,7 @@ import me.kire.re.pojogenerator.model.Attribute;
 import me.kire.re.pojogenerator.model.Class;
 import me.kire.re.pojogenerator.model.Pojo;
 import me.kire.re.pojogenerator.model.PropertyPayload;
-import me.kire.re.pojogenerator.model.TextPojo;
+import me.kire.re.pojogenerator.model.JsonPojo;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,11 +26,11 @@ public class TextFactory implements FileFactory {
     @Override
     public Mono<Pojo> createPojo(String text, Path path, Boolean lombok) {
         return Mono.defer(() -> {
-            TextPojo.TextPojoBuilder builder = TextPojo.builder();
+            JsonPojo.JsonPojoBuilder builder = JsonPojo.builder();
             Flux<PropertyPayload> read = this.read(text);
             return this.cache(read)
                     .doOnNext(map -> {
-                        builder.textPayload(map);
+                        builder.mapPayload(map);
                         builder.outputDirectory(path);
                         builder.lombok(lombok);
                     })

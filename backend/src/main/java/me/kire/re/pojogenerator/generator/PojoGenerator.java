@@ -1,4 +1,4 @@
-package me.kire.re.pojogenerator.util;
+package me.kire.re.pojogenerator.generator;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -8,8 +8,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.kire.re.pojogenerator.model.Attribute;
 import me.kire.re.pojogenerator.model.Class;
@@ -21,17 +19,18 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.kire.re.pojogenerator.util.Constants.OUT_CONCAT;
 
 @Slf4j
-public class PojoUtils {
-
-    private PojoUtils() {
-    }
-
-    public static void generateJavaFile(Class propertyKey, List<Attribute> attributes, Path outputDirectory,
-                                        Boolean lombok) {
+public class PojoGenerator {
+    private final Consumer<TypeSpec.Builder> lombokAnnotations = builder -> {
+        List<AnnotationSpec> annotationSpecs = lombokAnnotations();
+        builder.addAnnotations(annotationSpecs);
+    };
+    
+    public void generateJavaFile(Class propertyKey, List<Attribute> attributes, Path outputDirectory, Boolean lombok) {
         // Class
         String className = upperCaseClassName(propertyKey.name());
         TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
@@ -50,8 +49,7 @@ public class PojoUtils {
         });
 
         if (lombok) {
-            List<AnnotationSpec> annotations = lombokAnnotations();
-            classBuilder.addAnnotations(annotations);
+            lombokAnnotations.accept(classBuilder);
         }
 
         String packageName = propertyKey.ioType().equals("I") ? "in" : "out";
@@ -68,48 +66,51 @@ public class PojoUtils {
         }
     }
 
-    private static FieldSpec generateField(ClassName listType, Attribute attribute) {
-        TypeName typeName;
-
+    private FieldSpec generateField(ClassName listType, Attribute attribute) {
         String propertyType = attribute.type();
         String propertyName = attribute.name();
+
         if (attribute.isArray() && attribute.isObject()) {
-            typeName = ParameterizedTypeName.get(listType, ClassName.get("", propertyType));
+            var parameterizedTypeName =
+                    ParameterizedTypeName.get(listType, ClassName.get("", propertyType));
+            return field(parameterizedTypeName, propertyName);
         } else if (attribute.isObject()) {
-            typeName = ClassName.get("", propertyType);
+            var className = ClassName.get("", propertyType);
+            return field(className, propertyName);
         } else {
-            typeName = ClassName.get(String.class);
+            var className = ClassName.get(String.class);
+            return field(className, propertyName);
         }
-        return field(typeName, propertyName);
     }
 
-    private static FieldSpec field(TypeName typeName, String field) {
+    private FieldSpec field(TypeName typeName, String field) {
         return FieldSpec.builder(typeName, field)
                 .addModifiers(Modifier.PRIVATE)
                 .build();
     }
 
-    private static List<MethodSpec> generateMethods(ClassName listType, Attribute attribute) {
-        TypeName typeName;
-
+    private List<MethodSpec> generateMethods(ClassName listType, Attribute attribute) {
         String propertyType = attribute.type();
         String propertyName = attribute.name();
-        if (attribute.isArray() && attribute.isObject()) {
-            typeName = ParameterizedTypeName.get(listType, ClassName.get("", propertyType));
-        } else if (attribute.isObject()) {
-            typeName = ClassName.get("", propertyType);
-        } else {
-            typeName = ClassName.get(String.class);
-        }
 
-        return methods(typeName, propertyName);
+        if (attribute.isArray() && attribute.isObject()) {
+            var parameterizedTypeName =
+                    ParameterizedTypeName.get(listType, ClassName.get("", propertyType));
+            return methods(parameterizedTypeName, propertyName);
+        } else if (attribute.isObject()) {
+            var className = ClassName.get("", propertyType);
+            return methods(className, propertyName);
+        } else {
+            var className = ClassName.get(String.class);
+            return methods(className, propertyName);
+        }
     }
 
-    private static List<MethodSpec> methods(TypeName typeName, String field) {
+    private List<MethodSpec> methods(TypeName typeName, String field) {
         return Arrays.asList(getterMethod(field, typeName), setterMethod(field, typeName));
     }
 
-    private static MethodSpec getterMethod(String fieldName, TypeName typeName) {
+    private MethodSpec getterMethod(String fieldName, TypeName typeName) {
         String field = removeOutString(lowerCase(fieldName));
         return MethodSpec.methodBuilder("get" + StringUtils.capitalize(fieldName))
                 .addModifiers(Modifier.PUBLIC)
@@ -118,7 +119,7 @@ public class PojoUtils {
                 .build();
     }
 
-    private static MethodSpec setterMethod(String fieldName, TypeName typeName) {
+    private MethodSpec setterMethod(String fieldName, TypeName typeName) {
         String field = removeOutString(lowerCase(fieldName));
         return MethodSpec.methodBuilder("set" + StringUtils.capitalize(fieldName))
                 .addModifiers(Modifier.PUBLIC)
@@ -128,34 +129,34 @@ public class PojoUtils {
                 .build();
     }
 
-    private static List<AnnotationSpec> lombokAnnotations() {
+    private List<AnnotationSpec> lombokAnnotations() {
         return Arrays.asList(getterAnnotation(), setterAnnotation());
     }
 
-    private static AnnotationSpec getterAnnotation() {
+    private AnnotationSpec getterAnnotation() {
         ClassName getter = ClassName.get("lombok", "Getter");
         return AnnotationSpec.builder(getter)
                 .build();
     }
 
-    private static AnnotationSpec setterAnnotation() {
+    private AnnotationSpec setterAnnotation() {
         ClassName setter = ClassName.get("lombok", "Setter");
         return AnnotationSpec.builder(setter)
                 .build();
     }
 
-    private static String upperCaseClassName(String name) {
+    private String upperCaseClassName(String name) {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
-    private static String lowerCase(String field) {
+    private String lowerCase(String field) {
         if (field.startsWith(field.substring(0, 1).toUpperCase())) {
             return field.substring(0, 1).toLowerCase() + field.substring(1);
         }
         return field;
     }
 
-    private static String removeOutString(String field) {
+    private String removeOutString(String field) {
         if (field.endsWith(OUT_CONCAT)) {
             return field.substring(0, field.length() - OUT_CONCAT.length());
         }
